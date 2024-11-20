@@ -4,6 +4,9 @@ import { Repository } from 'typeorm';
 import { CreateUsersApplicationDto } from './dto/create-users-application.dto';
 import { UpdateUsersApplicationDto } from './dto/update-users-application.dto';
 import { UsersApplication } from './entities/users-application.entity';
+import { RpcException } from '@nestjs/microservices';
+import { HttpStatus } from '@nestjs/common';
+
 
 @Injectable()
 export class UsersApplicationsService {
@@ -34,10 +37,13 @@ export class UsersApplicationsService {
 
   async findOne(id: number) {
     const assignment = await this.usersApplicationRepository.findOne({
-      where: { id }, 
+      where: { id },
     });
     if (!assignment) {
-      throw new NotFoundException('Asignación no encontrada');
+      throw new RpcException({
+        status: HttpStatus.NOT_FOUND,
+        message: `Asignación con id ${id} no encontrada`,
+      });
     }
     return assignment;
   }
