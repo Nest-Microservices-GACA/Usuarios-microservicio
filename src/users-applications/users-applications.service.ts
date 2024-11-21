@@ -57,4 +57,17 @@ export class UsersApplicationsService {
     const assignment = await this.findOne(id);
     return await this.usersApplicationRepository.remove(assignment);
   }
+  async findOneWithRole(id: number) {
+    const userWithRole = await this.usersApplicationRepository.findOne({
+      where: { id },
+      relations: ['role'], 
+    });
+  
+    if (!userWithRole) {
+      throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+    }
+  
+    return userWithRole;
+  }
+  
 }
