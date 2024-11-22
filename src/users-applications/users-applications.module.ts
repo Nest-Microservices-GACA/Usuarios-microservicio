@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { UsersApplicationsService } from './users-applications.service';
+import { ConfigModule } from '@nestjs/config';
 import { UsersApplicationsController } from './users-applications.controller';
-import { UsersApplication } from './entities/users-application.entity';
+import { UsersApplicationsService } from './users-applications.service';
 import { PositionsService } from './positions.service';
+import { UsersApplication } from './entities/users-application.entity';
 import { Position } from './entities/position.entity';
-import { USERS_APPLICATIONS_SERVICE } from 'src/config';
-import { envs } from 'src/config/envs';
+import { CommonService } from './common/common.service'; 
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UsersApplication, Position]),
+    ConfigModule, 
   ],
   controllers: [UsersApplicationsController],
-  providers: [UsersApplicationsService, PositionsService],
+  providers: [UsersApplicationsService, PositionsService, CommonService],
 })
 export class UsersApplicationsModule {}
