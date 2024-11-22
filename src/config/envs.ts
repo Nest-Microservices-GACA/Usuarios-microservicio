@@ -8,6 +8,8 @@ interface EnvVars {
   DB_NAME: string;
   DB_PORT: number;
   PORT: number;
+  USUARIOS_MICROSERVICE_HOST: string;
+  USUARIOS_MICROSERVICE_PORT: number;
 }
 
 const envsSchema = joi.object({
@@ -17,6 +19,8 @@ const envsSchema = joi.object({
   DB_NAME: joi.string().required(),
   DB_PORT: joi.number().required(),
   PORT: joi.number().required(),
+  USUARIOS_MICROSERVICE_HOST: joi.string().required(),
+  USUARIOS_MICROSERVICE_PORT: joi.number().required(),
 }).unknown(true);
 
 const { error, value } = envsSchema.validate(process.env);
@@ -36,4 +40,6 @@ export const envs = {
     port: envVars.DB_PORT,
   },
   port: envVars.PORT,
+  usuariosMicroserviceHost: envVars.USUARIOS_MICROSERVICE_HOST,
+  usuariosMicroservicePort: envVars.USUARIOS_MICROSERVICE_PORT,
 };

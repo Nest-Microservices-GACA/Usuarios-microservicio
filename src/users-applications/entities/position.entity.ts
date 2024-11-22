@@ -9,6 +9,6 @@ export class Position {
   @Column({ type: 'varchar', length: 255 })
   nom_rol: string;
 
-  @OneToMany(() => UsersApplication, (userApp) => userApp.role)
+ // @OneToMany(() => UsersApplication, (userApp) => userApp.role)
   users: UsersApplication[];
 }

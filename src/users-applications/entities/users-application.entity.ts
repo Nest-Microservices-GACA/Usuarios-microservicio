@@ -1,22 +1,53 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Position } from './position.entity'; // Asegúrate de importar la entidad Position
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
 
-@Entity('usuarios_applications')
+@Entity('cat_colaborador')
 export class UsersApplication {
-  @PrimaryGeneratedColumn('increment')
-  id: number;
+  @PrimaryGeneratedColumn('identity')
+  idu_usuario: string;
 
-  @Column({ type: 'int' })
-  idu_aplicacion: number;
+  @Column({
+      type: 'varchar', 
+      length:255, 
+      unique:true
+  })
+  numero_empleado: string;
 
-  @Column({ type: 'int' })
-  idu_usuario: number;
+  @Column({
+      type: 'varchar', 
+      length:255, 
+      unique:true
+  })
+  nom_correo: string;
 
-  @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
-  created_at: Date;
+  @Column('text', {
+      select: false
+  })
+  nom_contrasena: string;
 
-  // Relación con Position
-  @ManyToOne(() => Position, { eager: true }) // eager para cargar el rol automáticamente
-  @JoinColumn({ name: 'idu_rol' }) // Especifica el nombre de la columna de clave foránea
-  role: Position;
+  @Column({
+      type: 'varchar', 
+      length:255,
+  })
+  nom_usuario: string;
+
+  @Column('bool', {
+      default: true
+  })
+  esactivo: boolean;
+
+  @Column({
+      type: 'int',
+      name: 'idu_rol',
+  })
+  idu_rol: number;
+
+  @BeforeInsert()
+  checkFieldsBeforeInsert() {
+      this.nom_correo = this.nom_correo.toLowerCase().trim();
+  }
+
+  @BeforeUpdate()
+  checkFieldsBeforeUpdate() {
+      this.checkFieldsBeforeInsert();   
+  }
 }

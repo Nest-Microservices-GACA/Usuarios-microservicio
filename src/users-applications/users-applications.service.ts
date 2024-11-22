@@ -7,7 +7,6 @@ import { UsersApplication } from './entities/users-application.entity';
 import { RpcException } from '@nestjs/microservices';
 import { HttpStatus } from '@nestjs/common';
 
-
 @Injectable()
 export class UsersApplicationsService {
   constructor(
@@ -16,58 +15,71 @@ export class UsersApplicationsService {
   ) {}
 
   async create(createDto: CreateUsersApplicationDto) {
-    const existingAssignment = await this.usersApplicationRepository.findOne({
+    console.log('Creando nuevo usuario:', createDto);
+
+    const existingUser = await this.usersApplicationRepository.findOne({
       where: {
-        idu_aplicacion: createDto.idu_aplicacion,
-        idu_usuario: createDto.idu_usuario,
+        numero_empleado: createDto.numero_empleado,
+        nom_correo: createDto.nom_correo,
       },
     });
 
-    if (existingAssignment) {
-      throw new ConflictException('La aplicación ya está asignada a este usuario');
+    if (existingUser) {
+      throw new ConflictException('El usuario ya existe con este número de empleado o correo');
     }
 
-    const newAssignment = this.usersApplicationRepository.create(createDto);
-    return await this.usersApplicationRepository.save(newAssignment);
+    const newUser = this.usersApplicationRepository.create(createDto);
+    return await this.usersApplicationRepository.save(newUser);
   }
 
   findAll() {
+    console.log('Obteniendo todos los usuarios');
     return this.usersApplicationRepository.find();
   }
 
-  async findOne(id: number) {
-    const assignment = await this.usersApplicationRepository.findOne({
-      where: { id },
+  async findOne(id: string) {
+    console.log(`Buscando usuario con ID ${id}`);
+    const user = await this.usersApplicationRepository.findOne({
+      where: { idu_usuario: id },
     });
-    if (!assignment) {
+
+    if (!user) {
       throw new RpcException({
         status: HttpStatus.NOT_FOUND,
-        message: `Asignación con id ${id} no encontrada`,
+        message: `Usuario con ID ${id} no encontrado`,
       });
     }
-    return assignment;
-  }
-  async update(id: number, updateDto: UpdateUsersApplicationDto) {
-    const assignment = await this.findOne(id);
-    Object.assign(assignment, updateDto);
-    return await this.usersApplicationRepository.save(assignment);
+
+    return user;
   }
 
-  async remove(id: number) {
-    const assignment = await this.findOne(id);
-    return await this.usersApplicationRepository.remove(assignment);
+  async update(id: string, updateDto: UpdateUsersApplicationDto) {
+    console.log(`Actualizando usuario con ID ${id}:`, updateDto);
+    const user = await this.findOne(id);
+    Object.assign(user, updateDto);
+    return await this.usersApplicationRepository.save(user);
   }
-  async findOneWithRole(id: number) {
+
+  async remove(id: string) {
+    console.log(`Eliminando usuario con ID ${id}`);
+    const user = await this.findOne(id);
+    return await this.usersApplicationRepository.remove(user);
+  }
+
+  async findOneWithRole(id: string) {
+    console.log(`Buscando usuario con ID ${id} y su rol asociado`);
     const userWithRole = await this.usersApplicationRepository.findOne({
-      where: { id },
+      where: { idu_usuario: id },
       relations: ['role'], 
     });
-  
+
     if (!userWithRole) {
-      throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+      throw new RpcException({
+        status: HttpStatus.NOT_FOUND,
+        message: `Usuario con ID ${id} no encontrado`,
+      });
     }
-  
+
     return userWithRole;
   }
-  
 }

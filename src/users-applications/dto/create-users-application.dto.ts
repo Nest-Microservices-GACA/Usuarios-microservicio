@@ -1,14 +1,22 @@
-import { Type } from 'class-transformer';
-import { IsNumber, Min } from 'class-validator';
+import { IsString, IsBoolean, IsInt, IsOptional } from 'class-validator';
 
 export class CreateUsersApplicationDto {
-  @Type(() => Number)
-  @IsNumber()
-  @Min(1)
-  idu_aplicacion: number;
+  @IsString()
+  numero_empleado: string;
 
-  @Type(() => Number)
-  @IsNumber()
-  @Min(1)
-  idu_usuario: number;
+  @IsString()
+  nom_correo: string;
+
+  @IsString()
+  nom_contrasena: string;
+
+  @IsString()
+  nom_usuario: string;
+
+  @IsBoolean()
+  @IsOptional()
+  esactivo?: boolean; 
+
+  @IsInt()
+  idu_rol: number;
 }
