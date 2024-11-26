@@ -10,8 +10,8 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
     transport: Transport.TCP,
     options: {
-      host: envs.usuariosMicroserviceHost, 
-      port: envs.usuariosMicroservicePort, 
+      
+      port: envs.port, 
     },
   });
 
@@ -23,6 +23,6 @@ async function bootstrap() {
   );
 
   await app.listen();
-  logger.log(`Microservicio Usuarios-MS corriendo en ${envs.usuariosMicroserviceHost}:${envs.usuariosMicroservicePort}`);
+  logger.log(`Microservicio Usuarios-MS corriendo en ${envs.port}`);
 }
 bootstrap();
