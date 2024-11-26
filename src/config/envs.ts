@@ -9,6 +9,7 @@ interface EnvVars {
   DB_NAME: string;
   DB_PORT: number;
   PORT: number;
+  NATS_SERVERS: string[];
 }
 
 const envsSchema = joi.object({
@@ -18,10 +19,15 @@ const envsSchema = joi.object({
   DB_NAME: joi.string().required(),
   DB_PORT: joi.number().required(),
   PORT: joi.number().required(),
+  NATS_SERVERS: joi.array().items( joi.string() ).required(),
 })
 .unknown(true);
 
-const { error, value } = envsSchema.validate( process.env );
+
+const { error, value } = envsSchema.validate({ 
+  ...process.env,
+  NATS_SERVERS: process.env.NATS_SERVERS?.split(',')
+});
 
 
 if ( error ) {
@@ -38,4 +44,5 @@ export const envs = {
   dbName: envVars.DB_NAME,
   dbPort: envVars.DB_PORT,
   port: envVars.PORT,
+  natsServes: envVars.NATS_SERVERS,
 };
