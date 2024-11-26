@@ -4,21 +4,31 @@ import { Repository } from 'typeorm';
 import { Position } from './entities/position.entity';
 import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
+import { CommonService } from './common/common.service';
 
 @Injectable()
 export class PositionsService {
   constructor(
     @InjectRepository(Position)
     private readonly positionRepository: Repository<Position>,
+    private readonly commonService: CommonService, 
   ) {}
 
   async create(createPositionDto: CreatePositionDto) {
+
+    createPositionDto.nom_rol = this.commonService.encrypt(createPositionDto.nom_rol);
+
     const position = this.positionRepository.create(createPositionDto);
     return await this.positionRepository.save(position);
   }
 
-  findAll() {
-    return this.positionRepository.find();
+  async findAll() {
+    const positions = await this.positionRepository.find();
+
+    return positions.map((position) => {
+      position.nom_rol = this.commonService.decrypt(position.nom_rol);
+      return position;
+    });
   }
 
   async findOne(id: number) {
@@ -26,19 +36,22 @@ export class PositionsService {
     if (!position) {
       throw new NotFoundException(`Rol con id ${id} no encontrado`);
     }
+
+    position.nom_rol = this.commonService.decrypt(position.nom_rol);
     return position;
   }
 
-  async findOneWithUsers(id: number) { 
+  async findOneWithUsers(id: number) {
     const roleWithUsers = await this.positionRepository.findOne({
       where: { idu_rol: id },
-      relations: ['users'], 
+      relations: ['users'],
     });
 
     if (!roleWithUsers) {
       throw new NotFoundException(`Rol con id ${id} no encontrado`);
     }
 
+    roleWithUsers.nom_rol = this.commonService.decrypt(roleWithUsers.nom_rol);
     return roleWithUsers;
   }
 
@@ -52,6 +65,11 @@ export class PositionsService {
       throw new NotFoundException(`Rol con id ${id} no encontrado`);
     }
 
+    if (updatePositionDto.nom_rol) {
+      updatePositionDto.nom_rol = this.commonService.encrypt(updatePositionDto.nom_rol);
+    }
+
+    Object.assign(position, updatePositionDto);
     return await this.positionRepository.save(position);
   }
 
