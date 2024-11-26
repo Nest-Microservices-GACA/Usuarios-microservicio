@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { UsersApplication } from './users-application.entity'; 
 
-@Entity()
+@Entity('tbl_roles')
 export class Position {
   @PrimaryGeneratedColumn()
   idu_rol: number;
@@ -10,5 +10,5 @@ export class Position {
   nom_rol: string;
 
  // @OneToMany(() => UsersApplication, (userApp) => userApp.role)
-  users: UsersApplication[];
+  //users: UsersApplication[];
 }
